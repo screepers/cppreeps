@@ -10,6 +10,7 @@ em++ \
     -s WASM=1 \
     -s MODULARIZE=1 \
     -s EXPORTED_FUNCTIONS='[]' \
+    -s ALLOW_MEMORY_GROWTH=1 \
     -I include \
     -O3 -Wall -pedantic \
     src/loop.cpp -o build/loop.js

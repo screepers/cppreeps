@@ -1,5 +1,6 @@
 #pragma once
 
+#include <algorithm>
 #include <climits>
 #include <string>
 #include <type_traits>
@@ -200,7 +201,7 @@ namespace lzw {
         /// Single emplace step
         auto emplace_code = [&dict, &phrase, &max_code, &codes]{
             auto code = dict.at(phrase);
-            max_code = code > max_code ? code : max_code;
+            max_code = std::max(max_code, code);
             codes.emplace_back(code); };
         
         for(size_t i = 1, sz = s.size(); i < sz; ++i) {
