@@ -2,6 +2,30 @@
 
 Example of C++ API and bindings for Screeps based on Emscripten [Embind](http://kripken.github.io/emscripten-site/docs/api_reference/bind.h.html) and [`val`](http://kripken.github.io/emscripten-site/docs/api_reference/val.h.html) tools.
 
+### Getting started
+
+1. Install `emsdk` ([guide](http://webassembly.org/getting-started/developers-guide/)).
+    
+    > NOTE: it may take a long time to build toolchain for Emscripten compiler, and there are known issues with memory overflow while compiling and linking LLVM libraries. Please, see official [Emscripten](https://kripken.github.io/emscripten-site/index.html) and [WASM](http://webassembly.org/docs/high-level-goals/) documentation.
+    
+    now
+    
+2. Prepare building environment:
+    * with `$ source path_to_emsdk_dir/emsdk_env.sh` (Win: `emsdk_env.bat`)
+    * OR by configuring own build system (see [example](https://kripken.github.io/emscripten-site/docs/compiling/Building-Projects.html)).
+    
+3. Build project using `em++` to JS module (`.wasm` and `.js` files):
+    * `$ ./create.sh` (see script file example)
+    * OR using your own building system (`make` etc.)
+    
+4. Pull generated files to Screeps/PTR (using `grunt`, `gulp`, or whatever).
+    
+    > NOTE: WASM is an experimental feature, and for now it only available on [PTR](http://docs.screeps.com/ptr.html).
+    
+    > NOTE: for now binary GUI uploading isn't implemented yet.
+
+See `src/loop.cpp`, `src/main.js` for WASM usage examples.
+
 **_UNDER CONSTRUCTION_**
 
 ***
