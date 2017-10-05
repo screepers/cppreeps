@@ -9,7 +9,7 @@ Example of C++ API, bindings and utilities for [Screeps](https://screeps.com/) g
     > NOTE: it may take a long time to build toolchain for Emscripten compiler, and there are known issues with memory overflow while compiling and linking LLVM libraries. Please, see official [Emscripten](https://kripken.github.io/emscripten-site/index.html) and [WASM](http://webassembly.org/docs/high-level-goals/) documentation.
     
 2. Prepare building environment:
-    * with `$ source path_to_emsdk_dir/emsdk_env.sh` (Win: `emsdk_env.bat`)
+    * `$ source path_to_emsdk_dir/emsdk_env.sh` (Win: `emsdk_env.bat`)
     * OR by configuring own build system (see [example](https://kripken.github.io/emscripten-site/docs/compiling/Building-Projects.html)).
     
 3. Build project using `em++` to JS module (`.wasm` and `.js` files):
@@ -39,7 +39,7 @@ Header-only library `lzw.hpp` contains implementation of original [LZW](https://
     
 * Underlying string type can be chosen by standard C++ STL typedef ([Embind limitations](http://kripken.github.io/emscripten-site/docs/porting/connecting_cpp_and_javascript/embind.html#built-in-type-conversions)).
     
-    _Default_: `std::string`. Not tested for now: `std::wstring`.
+    _Default_: `std::wstring`. Uses UTF-16 `0000-7FFF` range for packing.
     
 * Possibility to use static cached buffers (may increase performance).
     
@@ -48,8 +48,6 @@ Header-only library `lzw.hpp` contains implementation of original [LZW](https://
 * Encoding with fixed bit depth (choses by maximum used code).
     
 * Dense bit packing (uses binary operations with resulting string bytes).
-    
-* Compile time tuning to avoid UB while binary packing/unpacking with signed character types, so library _seems to be_ portable and stable :)
     
 * Header-only and STL-only open source.
 
@@ -73,6 +71,19 @@ LZW encode = 167.497 CPU, 244.144 CPU/MIB
 LZW decode = 185.010 CPU, 1413.525 CPU/MIB
 ```
 
+<details><summary>In-game usage result</summary>
+
+```
+Memory view:
+
+1.1 KB
+src :   {\"stats\":{\"profiler.findInRange\":0.06027972683740784,..."
+
+0.2 KB
+enc :   ࡻ᳂ᇐ㐘ܱ⠢ ⇀⼜١ど᥆⇈ഋۢ⑤ᮄᅈ⸘ٱᱥఈ¸㘌̀ᰲใ⃜㘌΀ᰳഃダ㠍̀ࠬᣂᇀ⸝রᑴ᳅Ɣܙ͂в...
+```
+</details>
+
 Library can be exported to JS using [Emscripten Embind API](http://kripken.github.io/emscripten-site/docs/api_reference/bind.h.html):
 
 ```cpp
@@ -88,7 +99,7 @@ Example of usage from JS (see sources for complete examples):
 const src = "Ololo, some string!";
 const enc = mod.zlw_encode(src);
 const dec = mod.zlw_decode(enc);
-assert(src == dec);
+// assert(src == dec);
 ```
 
 ***

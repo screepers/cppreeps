@@ -15,7 +15,7 @@ namespace lzw {
     using size_t = std::size_t;
     
     /// String type to be used as lzw I/O storage
-    using string_type = std::string;
+    using string_type = std::wstring;
     
     /// Default dictionary bounds
     enum : size_t {
@@ -44,9 +44,8 @@ namespace lzw {
         
         enum : size_t {
             DFLT_DICT_SIZE  = DFLT_DICT_TO - DFLT_DICT_FROM,
-            BITS_IN_CHAR    = CHAR_BIT,
-            ALLOWED_BITS    = std::is_unsigned<char_type>::value || UNSAFE_SIGNED_PACK ?
-                              BITS_IN_CHAR : (BITS_IN_CHAR - 1)
+            BITS_IN_CHAR    = CHAR_BIT * sizeof(char_type),
+            ALLOWED_BITS    = 15 // floor(0000..D7FF) = {0XXXXXXX XXXXXXXX}, see UTF-16
         };
         
         

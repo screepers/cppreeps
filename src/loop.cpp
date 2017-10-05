@@ -39,7 +39,10 @@ EMSCRIPTEN_BINDINGS(loop) {
     emscripten::function("loop", &loop);
 }
 
+std::u16string test(std::u16string s) { return s; }
+
 EMSCRIPTEN_BINDINGS(lzw) {
     emscripten::function("zlw_encode", &lzw::lzw_encode);
     emscripten::function("zlw_decode", &lzw::lzw_decode);
+    emscripten::function("test", &test);
 }
