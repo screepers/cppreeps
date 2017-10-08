@@ -1,0 +1,3 @@
+[submodule "lib/lzw"]
+	path = lib/lzw
+	url = git@github.com:Mototroller/ax.lzw.git

@@ -2,7 +2,7 @@
 
 Example of C++ API, bindings and utilities for [Screeps](https://screeps.com/) game based on Emscripten [Embind](http://kripken.github.io/emscripten-site/docs/api_reference/bind.h.html) and [`val`](http://kripken.github.io/emscripten-site/docs/api_reference/val.h.html) tools.
 
-## Getting started
+## Getting started (_under construction_)
 
 1. Install `emsdk` ([guide](http://webassembly.org/getting-started/developers-guide/)).
     
@@ -24,35 +24,31 @@ Example of C++ API, bindings and utilities for [Screeps](https://screeps.com/) g
 
 See `src/loop.cpp`, `src/main.js` for WASM usage examples.
 
-**_UNDER CONSTRUCTION_**
-
 ***
 
-## Utility pack:
+# Utility pack:
 
-### LZW string encoder/decoder
-Header-only library `lzw.hpp` contains implementation of original [LZW](https://en.wikipedia.org/wiki/Lempel%E2%80%93Ziv%E2%80%93Welch) compression/decompression algorithms. Features:
+## LZW-based codec (_[submodule](https://github.com/Mototroller/ax.lzw)_) [![Build Status](https://travis-ci.org/Mototroller/ax.lzw.svg?branch=master)](https://travis-ci.org/Mototroller/ax.lzw)
+Header-only library **lib/lzw/lzw.hpp** contains implementation of original [LZW](https://en.wikipedia.org/wiki/Lempel%E2%80%93Ziv%E2%80%93Welch) compression/decompression algorithms. It's a submodule, see my [source repo](https://github.com/Mototroller/ax.lzw) for details.
 
-* Initial dictionary can be chosen by range of character codes.
-    
-    _Default_: 0-128, standard ASCII Chart _aka_ Unicode.Basic_Latin.
-    
-* Underlying string type can be chosen by standard C++ STL typedef ([Embind limitations](http://kripken.github.io/emscripten-site/docs/porting/connecting_cpp_and_javascript/embind.html#built-in-type-conversions)).
-    
-    _Default_: `std::wstring`. Uses UTF-16 `0000-7FFF` range for packing.
-    
-* Possibility to use static cached buffers (may increase performance).
-    
-    _Default_: `USE_CACHED_BUFFERS = false` to avoid data races in multithreaded environment.
-    
-* Encoding with fixed bit depth (choses by maximum used code).
-    
-* Dense bit packing (uses binary operations with resulting string bytes).
-    
-* Header-only and STL-only open source.
+Header file **include/lzw.hpp** contains `EMSCRIPTEN_BINDINGS(lzw){...}` block exporting two codec functions to `WASM` module making them easy to use. Their native signatures:
+
+```cpp
+std::wstring lzw_encode(std::wstring in);
+std::wstring lzw_decode(std::wstring in);
+```
+
+...and example of JS usage (see sources for other examples):
+
+```javascript
+const src = "Ololo, some string!";
+const enc = mod.zlw_encode(src);
+const dec = mod.zlw_decode(enc);
+// assert(src == dec);
+```
 
 
-#### Native performance test (1 KIB string):
+### Native performance test (1 KIB string):
 
 ```
 LZW encode = 94 us/KIB, decode = 94 us/KIB
@@ -63,7 +59,7 @@ LZW encode = 151 us/KIB, decode = 16 us/KIB
 ZIP ratio = 1.25977 (enc/src) str="v21ny6E5624VjTk8..." (random)
 ```
 
-#### JS performance tests, `lzw_xxcode(RawMemory.get())`, ~600 KIB:
+### JS performance tests, `lzw_xxcode(RawMemory.get())`, ~600 KIB:
 
 ```
 LZW encode = 167.497 CPU, 244.144 CPU/MIB
@@ -71,7 +67,7 @@ LZW encode = 167.497 CPU, 244.144 CPU/MIB
 LZW decode = 185.010 CPU, 1413.525 CPU/MIB
 ```
 
-<details><summary>In-game usage result</summary>
+### In-game usage result:
 
 ```
 Memory view:
@@ -79,29 +75,11 @@ Memory view:
 1.1 KB
 src :   {\"stats\":{\"profiler.findInRange\":0.06027972683740784,..."
 
-0.2 KB
-enc :   ࡻ᳂ᇐ㐘ܱ⠢ ⇀⼜١ど᥆⇈ഋۢ⑤ᮄᅈ⸘ٱᱥఈ¸㘌̀ᰲใ⃜㘌΀ᰳഃダ㠍̀ࠬᣂᇀ⸝রᑴ᳅Ɣܙ͂в...
-```
-</details>
-
-Library can be exported to JS using [Emscripten Embind API](http://kripken.github.io/emscripten-site/docs/api_reference/bind.h.html):
-
-```cpp
-EMSCRIPTEN_BINDINGS(lzw) {
-    emscripten::function("zlw_encode", &lzw::lzw_encode);
-    emscripten::function("zlw_decode", &lzw::lzw_decode);
-}
+0.3 KB
+enc :  **࢛ກҔຣ࢓ݡ䂠๣ᢏൃᒌ๣㑎෤⒄෢Ѳ෣ᒇᄃ㡐ء塐݁呕ځ呒ۡ䁘݁䣌ځじѡ䂃...
 ```
 
-Example of usage from JS (see sources for complete examples):
-
-```javascript
-const src = "Ololo, some string!";
-const enc = mod.zlw_encode(src);
-const dec = mod.zlw_decode(enc);
-// assert(src == dec);
-```
 
 ***
 
-Thanks @ags131 for his examples and initial experiments =)
+Thanks @ags131, @primus, @tedivm for their examples and experience =)
