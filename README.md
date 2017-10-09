@@ -1,28 +1,61 @@
 # CPPREEPS
 
-Example of C++ API, bindings and utilities for [Screeps](https://screeps.com/) game based on Emscripten [Embind](http://kripken.github.io/emscripten-site/docs/api_reference/bind.h.html) and [`val`](http://kripken.github.io/emscripten-site/docs/api_reference/val.h.html) tools.
+Example of C++ API, bindings and utilities for [Screeps](https://screeps.com/) game. Native C++ source code can be compiled to [WebAssembly(WASM)](http://webassembly.org/) format using [Emscripten](http://kripken.github.io/emscripten-site/docs/api_reference/bind.h.html) compiler.
+
+> WebAssembly (or wasm) is a low-level bytecode format for in-browser client-side scripting, evolved from JavaScript. Its initial aim is to support compilation from C and C++, though other source languages such as Rust are also supported... [WIKI](https://en.wikipedia.org/wiki/WebAssembly)
+
+> Emscripten is an Open Source LLVM to JavaScript compiler. Using Emscripten you can: compile C and C++ code into JavaScript, compile any other code that can be translated into LLVM bitcode into JavaScript, compile the C/C++ runtimes of other languages into JavaScript, and then run code in those other languages in an indirect way (this has been done for Python and Lua)!.. [DOCS](http://kripken.github.io/emscripten-site/docs/introducing_emscripten/about_emscripten.html)
+
+WASM modules (`.wasm` files) can be relatively easily loaded within `.js` code. After that, native C++ functions can be called from JS, example:
+
+```javascript
+const wasm_loader = require("wasm_loader");
+const module = wasm_loader("js_filename", "wasm_filename");
+/* * * * */
+let result = module.native_function(arg1, arg2);
+let some_sinus = module.sin(9001);
+let packed_mem = module.lzw_encode(RawMemory.get());
+let path = module.find_path(creep1, creep2);
+```
 
 ## Getting started (_under construction_)
 
-1. Install `emsdk` ([guide](http://webassembly.org/getting-started/developers-guide/)).
+1. Download and install `emsdk` (Emscripten SDK, compiler toolchain): [guide](http://kripken.github.io/emscripten-site/docs/getting_started/downloads.html).
     
-    > NOTE: it may take a long time to build toolchain for Emscripten compiler, and there are known issues with memory overflow while compiling and linking LLVM libraries. Please, see official [Emscripten](https://kripken.github.io/emscripten-site/index.html) and [WASM](http://webassembly.org/docs/high-level-goals/) documentation.
+    > NOTE: the simplest way to get started with WASM is to use **portable** `emsdk` package: it easy to install and work with, just follow installation guide *very carefully*.
+    
+    This step briefly (Linux/iOS syntax):
+    
+    ```bash
+    $ #Download emsdk-portable.tar.gz && Unpack archive
+    $ ./emsdk update
+    $ ./emsdk install latest
+    $ ./emsdk activate latest
+    ```
     
 2. Prepare building environment:
-    * `$ source path_to_emsdk_dir/emsdk_env.sh` (Win: `emsdk_env.bat`)
-    * OR by configuring own build system (see [example](https://kripken.github.io/emscripten-site/docs/compiling/Building-Projects.html)).
+    * Linux/iOS: `$ source ./emsdk_env.sh`
+    * Windows: `> emsdk_env.bat`
+    * OR by configuring own building system (see [official example](https://kripken.github.io/emscripten-site/docs/compiling/Building-Projects.html)).
     
-3. Build project using `em++` to JS module (`.wasm` and `.js` files):
-    * `$ ./create.sh` (see script file example)
+    > NOTE: configuring own building system (cmake + make etc.) is **the most painful way** to get started with Emscripten, so **we really need help here** to complete this guide =)
+    
+3. Build project using `em++` to WASM module (pair of `.wasm` and `.js` files):
+    * Linux/iOS: `$ ./create.sh` (see script file example)
+    * Windows: _script under construction_
     * OR using your own building system (`make` etc.)
     
-4. Pull generated files to Screeps/PTR (using `grunt`, `gulp`, or whatever).
+4. Push generated files from `/dist` folder to Screeps/PTR (using `grunt`, `gulp`, or whatever).
     
     > NOTE: WASM is an experimental feature, and for now it only available on [PTR](http://docs.screeps.com/ptr.html).
     
     > NOTE: for now binary GUI uploading isn't implemented yet.
 
 See `src/loop.cpp`, `src/main.js` for WASM usage examples.
+
+Current repo can be cloned by: `git clone --recursive git://***.git`
+
+Submodules updating can be performed by: `git submodule update --init --recursive`
 
 ***
 
@@ -31,7 +64,7 @@ See `src/loop.cpp`, `src/main.js` for WASM usage examples.
 ## LZW-based codec (_[submodule](https://github.com/Mototroller/ax.lzw)_) [![Build Status](https://travis-ci.org/Mototroller/ax.lzw.svg?branch=master)](https://travis-ci.org/Mototroller/ax.lzw)
 Header-only library **lib/lzw/lzw.hpp** contains implementation of original [LZW](https://en.wikipedia.org/wiki/Lempel%E2%80%93Ziv%E2%80%93Welch) compression/decompression algorithms. It's a submodule, see my [source repo](https://github.com/Mototroller/ax.lzw) for details.
 
-Header file **include/lzw.hpp** contains `EMSCRIPTEN_BINDINGS(lzw){...}` block exporting two codec functions to `WASM` module making them easy to use. Their native signatures:
+Header file **include/lzw.hpp** contains wrapper around `lzw_codec<ASCII_128_common, UTF16_pack>` codec functions and `EMSCRIPTEN_BINDINGS(lzw){...}` block exporting them to `WASM` module making them easy to use. Their native signatures:
 
 ```cpp
 std::wstring lzw_encode(std::wstring in);
@@ -42,8 +75,8 @@ std::wstring lzw_decode(std::wstring in);
 
 ```javascript
 const src = "Ololo, some string!";
-const enc = mod.zlw_encode(src);
-const dec = mod.zlw_decode(enc);
+const enc = mod.lzw_encode(src);
+const dec = mod.lzw_decode(enc);
 // assert(src == dec);
 ```
 

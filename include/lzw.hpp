@@ -32,8 +32,8 @@ namespace screeps {
     }
 
     EMSCRIPTEN_BINDINGS(lzw) {
-        emscripten::function("zlw_encode", &lzw_encode);
-        emscripten::function("zlw_decode", &lzw_decode);
+        emscripten::function("lzw_encode", &lzw_encode);
+        emscripten::function("lzw_decode", &lzw_decode);
     }
     
 }
