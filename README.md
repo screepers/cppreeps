@@ -1,6 +1,6 @@
 # CPPREEPS
 
-Example of C++ API, bindings and utilities for [Screeps](https://screeps.com/) game. Native C++ source code can be compiled to [WebAssembly(WASM)](http://webassembly.org/) format using [Emscripten](http://kripken.github.io/emscripten-site/docs/api_reference/bind.h.html) compiler.
+Example of C++ API, bindings and utilities for [Screeps](https://screeps.com/) game. Native C++ source code can be compiled to [WebAssembly (WASM)](http://webassembly.org/) format using [Emscripten](http://kripken.github.io/emscripten-site/docs/api_reference/bind.h.html) compiler.
 
 > WebAssembly (or wasm) is a low-level bytecode format for in-browser client-side scripting, evolved from JavaScript. Its initial aim is to support compilation from C and C++, though other source languages such as Rust are also supported... [WIKI](https://en.wikipedia.org/wiki/WebAssembly)
 
@@ -37,15 +37,15 @@ let path = module.find_path(creep1, creep2);
     * Linux/iOS: `$ source ./emsdk_env.sh`
     * Windows: `> emsdk_env.bat`
     * OR by configuring own building system (see [official example](https://kripken.github.io/emscripten-site/docs/compiling/Building-Projects.html)).
-    
-    > NOTE: configuring own building system (cmake + make etc.) is **the most painful way** to get started with Emscripten, so **we really need help here** to complete this guide =)
+        
+        > NOTE: configuring own building system (cmake + make etc.) is **the most painful way** to get started with Emscripten, so **we really need help here** to complete this guide =)
     
 3. Build project using `em++` to WASM module (pair of `.wasm` and `.js` files):
     * Linux/iOS: `$ ./create.sh` (see script file example)
-    * Windows: _script under construction_
+    * Windows: `> create.bat` (see script file example)
     * OR using your own building system (`make` etc.)
     
-4. Push generated files from `/dist` folder to Screeps/PTR (using `grunt`, `gulp`, or whatever).
+4. Push generated files from `/dist` folder to Screeps/PTR (using `grunt`, `gulp`, or whatever), see Screeps docs: [1](http://docs.screeps.com/commit.html#Using-Grunt-task), [2](https://screeps.com/forum/post/8464).
     
     > NOTE: WASM is an experimental feature, and for now it only available on [PTR](http://docs.screeps.com/ptr.html).
     
