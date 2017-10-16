@@ -17,4 +17,4 @@ em++                                \
 cp build/loop.wasm      dist/
 cp build/loop.js        dist/loop_mod.js
 cp src/main.js          dist/
-cp src/wasm_loader.js   dist/
+cp src/wasm_utils.js    dist/

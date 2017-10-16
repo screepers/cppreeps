@@ -26,7 +26,7 @@ namespace screeps {
         using codec = lzw::codecs::string_to_UTF16;
         
         std::wstring out;
-        out.reserve(in.size()*2);
+        out.reserve(in.size()*4);
         codec::decode(in.begin(), in.end(), std::back_inserter(out));
         return out;
     }

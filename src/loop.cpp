@@ -8,11 +8,15 @@
 /// Exporting lzw_xxcode() to current module
 #include <lzw.hpp>
 
+/// Exporting Distance Transform lib to current module
+#include <map.hpp>
+
+
 void loop() {
     using namespace utils;
     using namespace screeps;
     
-    INIT();
+    RECACHE_TICK();
     
     std::printf("Updated Game.time = %d\n",
         tick->Game["time"].as<int>());
@@ -41,3 +45,15 @@ void loop() {
 EMSCRIPTEN_BINDINGS(loop) {
     emscripten::function("loop", &loop);
 }
+
+#include <cstring>
+void test(unsigned ptr_num) {
+    auto ptr = reinterpret_cast<char*>(ptr_num);
+    std::printf("got ptr=%p, str=%s\n", (void*)(ptr), ptr);
+    std::strcpy(ptr, "Modified!");
+    std::printf("ret ptr=%p, str=%s\n", (void*)(ptr), ptr);
+}
+EMSCRIPTEN_BINDINGS(test) {
+    emscripten::function("test", &test, emscripten::allow_raw_pointers());
+}
+

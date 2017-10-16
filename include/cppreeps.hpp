@@ -4,7 +4,9 @@
 #include <cstdio>
 #include <map>
 #include <memory>
+#include <string>
 #include <vector>
+#include <unordered_map>
 #include <utility>
 
 #include <emscripten.h>
@@ -17,6 +19,7 @@
 namespace utils {
     
     using val = emscripten::val;
+    
     
     using array_native  = std::vector<val>;
     using object_native = std::map<std::string, val>;
@@ -34,10 +37,24 @@ namespace utils {
     inline val get_global(std::string const& name) {
         return val::global(name.c_str()); }
     
-    /// @returns val of global constant by its name
-    template <class T>
-    inline val gCONST(T&& name) {
-        return val::global(std::forward<T>(name)); }
+    
+    /// @returns cached reference to global constant val by its name
+    val& gCONST(char const* name = nullptr) {
+        using namespace std;
+        using constants_cache_map = unordered_map<string, val>;
+        
+        static constants_cache_map constants_ = []{
+            constants_cache_map res;
+            res.reserve(128);
+            return res;
+        }();
+        
+        string key(name ? name : "");
+        auto it = constants_.find(key);
+        if(it == constants_.end())
+            it = constants_.emplace(key, val::global(name)).first;
+        return it->second;
+    }
     
     
     /// Parses given val, @returns std::vector<val>
@@ -83,8 +100,15 @@ namespace screeps {
     static std::unique_ptr<tick_t> tick;
     
     /// Performs recaching of global game objects,
-    /// resets previous tick data reference counters, releases objects for GC
-    void INIT() { tick.reset(new tick_t{}); }
+    /// resets previous tick data reference counters, releases objects for JS GC
+    void RECACHE_TICK() {
+        if(!tick || tick->Game["time"].as<long>() != get_global("Game")["time"].as<long>())
+            tick.reset(new tick_t{});
+    }
+    
+    EMSCRIPTEN_BINDINGS(tick) {
+        emscripten::function("RECACHE_TICK", &RECACHE_TICK);
+    }
 }
 
 #undef LOG_HEAD
